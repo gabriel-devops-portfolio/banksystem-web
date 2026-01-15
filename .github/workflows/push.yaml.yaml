@@ -1,0 +1,31 @@
+name: push
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  push:
+    uses: gabriel-devops-portfolio/actions-templates/.github/workflows/publish.yaml@main
+
+  staging-deploy:
+    needs: push
+    if: github.ref == 'refs/heads/dev'
+    uses: gabriel-devops-portfolio/actions-templates/.github/workflows/trigger-gitops.yaml@main
+    with:
+      environment: staging
+      branch: dev
+    secrets: inherit
+
+  prod-deploy:
+    needs: push
+    if: github.ref == 'refs/heads/main'
+    uses: gabriel-devops-portfolio/actions-templates/.github/workflows/trigger-gitops.yaml@main
+    with:
+      environment: prod
+      branch: main
+    secrets: inherit
