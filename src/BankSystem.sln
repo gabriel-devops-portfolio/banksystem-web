@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankSystem.Services", "Bank
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankSystem.Web", "BankSystem.Web\BankSystem.Web.csproj", "{6763BFB9-644E-42A0-BFD5-0E3207B5E2B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BankSystem.Common", "BankSystem.Common\BankSystem.Common.csproj", "{C9929B86-CC4C-49F5-914C-E8C5D4BFA94C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{6763BFB9-644E-42A0-BFD5-0E3207B5E2B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6763BFB9-644E-42A0-BFD5-0E3207B5E2B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6763BFB9-644E-42A0-BFD5-0E3207B5E2B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9929B86-CC4C-49F5-914C-E8C5D4BFA94C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9929B86-CC4C-49F5-914C-E8C5D4BFA94C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9929B86-CC4C-49F5-914C-E8C5D4BFA94C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9929B86-CC4C-49F5-914C-E8C5D4BFA94C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
