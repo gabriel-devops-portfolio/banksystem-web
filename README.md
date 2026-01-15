@@ -31,8 +31,10 @@ dotnet test tests/BankSystem.Services.Tests/
 ### Docker Build
 
 ```bash
-cd src
+# Build from repository root
 docker build -t banksystem-web:latest .
+
+# Run locally
 docker run -p 5000:5000 \
   -e ConnectionStrings__DefaultConnection="..." \
   banksystem-web:latest
