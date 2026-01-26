@@ -1,20 +1,34 @@
-name: push
+name: Main Pipeline
 
 on:
   push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
   workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
+  security-events: write
 
 jobs:
-  push:
+  security-gate:
+    uses: gabriel-devops-portfolio/actions-templates/.github/workflows/security-checks.yml@main
+    with:
+      enable_dast: true
+      app_port: 8080
+    secrets: inherit
+
+  build-and-publish:
+    needs: [security-gate]
+    if: github.event_name != 'pull_request'
     uses: gabriel-devops-portfolio/actions-templates/.github/workflows/publish.yaml@main
+    secrets: inherit
 
   staging-deploy:
-    needs: push
-    if: github.ref == 'refs/heads/dev'
+    needs: [build-and-publish]
+    if: github.ref == 'refs/heads/dev' && github.event_name != 'pull_request'
     uses: gabriel-devops-portfolio/actions-templates/.github/workflows/trigger-gitops.yaml@main
     with:
       environment: staging
@@ -22,10 +36,31 @@ jobs:
     secrets: inherit
 
   prod-deploy:
-    needs: push
-    if: github.ref == 'refs/heads/main'
+    needs: [build-and-publish]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     uses: gabriel-devops-portfolio/actions-templates/.github/workflows/trigger-gitops.yaml@main
     with:
       environment: prod
       branch: main
     secrets: inherit
+
+  notify:
+    name: Slack Notification
+    needs: [security-gate, prod-deploy]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Notify Slack
+        uses: rtCamp/action-slack-notify@v2.3.3
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: ci-notifications
+          SLACK_COLOR: ${{ contains(needs.*.result, 'failure') && 'danger' || 'good' }}
+          SLACK_ICON: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+          SLACK_TITLE: "Pipeline Status: ${{ github.repository }}"
+          SLACK_MESSAGE: |
+            *Workflow:* ${{ github.workflow }}
+            *Event:* ${{ github.event_name }}
+            *Security Gate:* ${{ needs.security-gate.result }}
+            *Prod Deploy:* ${{ needs.prod-deploy.result || 'Skipped' }}
+            *Commit:* ${{ github.sha }}
